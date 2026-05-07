@@ -6,11 +6,15 @@ import { BrowserRouter, Routes, Route, Navigate, Outlet } from 'react-router-dom
 import { DypaiProvider, ProtectedRoute } from '@dypai-ai/client-sdk/react'
 import { Loader2 } from 'lucide-react'
 import { dypai } from '@/lib/dypai'
-import Index from './pages/Index'
-import NotFound from './pages/NotFound'
+import { appConfig } from '@/lib/app-config'
+import { AppLayout } from './components/layout/AppLayout'
 import { Login } from './pages/Login'
 import { ForgotPassword } from './pages/ForgotPassword'
 import { ResetPassword } from './pages/ResetPassword'
+import { Dashboard } from './pages/Dashboard'
+import { AdminUsers } from './pages/admin/AdminUsers'
+import { PlaceholderPage } from './pages/PlaceholderPage'
+import NotFound from './pages/NotFound'
 
 const queryClient = new QueryClient()
 
@@ -30,25 +34,43 @@ const App = () => (
         <Sonner />
         <BrowserRouter>
           <Routes>
-            {/* ── Public routes ── */}
-            <Route path="/" element={<Index />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
+            {/* ── Root → app entry. ProtectedRoute sends guests to login. ── */}
+            <Route path="/" element={<Navigate to={appConfig.homePath} replace />} />
 
-            {/* ── Protected routes ── wrap any private page inside here */}
+            {/* ── Public routes ── */}
+            <Route path={appConfig.loginPath} element={<Login />} />
+            <Route path={appConfig.forgotPasswordPath} element={<ForgotPassword />} />
+            <Route path={appConfig.passwordRecoveryPath} element={<ResetPassword />} />
+
+            {/* ── Protected routes (sidebar layout) ── */}
             <Route
               element={
                 <ProtectedRoute
                   loadingComponent={<LoadingScreen />}
-                  unauthenticatedComponent={<Navigate to="/login" replace />}
+                  unauthenticatedComponent={<Navigate to={appConfig.loginPath} replace />}
                 >
                   <Outlet />
                 </ProtectedRoute>
               }
             >
-              {/* <Route path="/dashboard" element={<Dashboard />} /> */}
-              {/* ADD ALL PRIVATE ROUTES HERE */}
+              <Route element={<AppLayout appName={appConfig.name} />}>
+                <Route path="/dashboard" element={<Dashboard />} />
+                <Route path="/workspace" element={<PlaceholderPage title="Workspace" />} />
+                <Route path="/settings" element={<PlaceholderPage title="Settings" />} />
+                <Route
+                  path={appConfig.adminUsersPath}
+                  element={
+                    <ProtectedRoute
+                      roles={['admin']}
+                      loadingComponent={<LoadingScreen />}
+                      unauthorizedComponent={<PlaceholderPage title="Access denied" description="Admin access is required." />}
+                    >
+                      <AdminUsers />
+                    </ProtectedRoute>
+                  }
+                />
+                {/* ADD ALL PRIVATE ROUTES HERE */}
+              </Route>
             </Route>
 
             <Route path="*" element={<NotFound />} />

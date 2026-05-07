@@ -1,17 +1,33 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate, Link } from 'react-router-dom'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
-import { Loader2, ArrowRight } from 'lucide-react'
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from '@/components/ui/card'
+import { Loader2 } from 'lucide-react'
 import { useAuth } from '@dypai-ai/client-sdk/react'
+import { AuthLayout } from '@/components/layout/AuthLayout'
+import { appConfig } from '@/lib/app-config'
 import { toast } from 'sonner'
 
 export function Login() {
   const navigate = useNavigate()
-  const { signIn } = useAuth()
+  const { signIn, isAuthenticated, isLoading } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (!isLoading && isAuthenticated) {
+      navigate(appConfig.homePath, { replace: true })
+    }
+  }, [isAuthenticated, isLoading, navigate])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -26,57 +42,73 @@ export function Login() {
       toast.error(error.message ?? 'Invalid credentials')
       return
     }
-    navigate('/')
+    navigate(appConfig.homePath)
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background px-4">
-      <div className="w-full max-w-sm space-y-6">
-        <div className="space-y-1">
-          <h1 className="text-2xl font-bold tracking-tight">Sign in</h1>
-          <p className="text-sm text-muted-foreground">Enter your credentials to continue</p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-1.5">
-            <label htmlFor="email" className="text-sm font-medium">Email</label>
-            <Input
-              id="email"
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              autoComplete="email"
-              autoFocus
-            />
-          </div>
-
-          <div className="space-y-1.5">
-            <div className="flex items-center justify-between">
-              <label htmlFor="password" className="text-sm font-medium">Password</label>
-              <Link to="/forgot-password" className="text-xs text-primary hover:underline">
-                Forgot password?
-              </Link>
+    <AuthLayout footer="Secured authentication via DYPAI">
+      <Card className="w-full max-w-[400px] border-border/80 shadow-sm">
+        <CardHeader className="space-y-1 pb-4">
+          <CardTitle className="text-xl font-semibold tracking-tight">Sign in</CardTitle>
+          <CardDescription>Use your workspace email and password.</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <div className="space-y-2">
+              <label htmlFor="email" className="text-sm font-medium leading-none">
+                Email
+              </label>
+              <Input
+                id="email"
+                type="email"
+                placeholder="name@company.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                autoComplete="email"
+                autoFocus
+                disabled={loading || isLoading}
+                className="h-11"
+              />
             </div>
-            <Input
-              id="password"
-              type="password"
-              placeholder="••••••••"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              autoComplete="current-password"
-            />
-          </div>
-
-          <Button type="submit" className="w-full" disabled={loading}>
-            {loading ? (
-              <><Loader2 className="h-4 w-4 animate-spin" /> Signing in...</>
-            ) : (
-              <>Sign in <ArrowRight className="h-4 w-4" /></>
-            )}
-          </Button>
-        </form>
-      </div>
-    </div>
+            <div className="space-y-2">
+              <div className="flex items-center justify-between gap-4">
+                <label htmlFor="password" className="text-sm font-medium leading-none">
+                  Password
+                </label>
+                <Link
+                  to={appConfig.forgotPasswordPath}
+                  className="text-xs text-muted-foreground underline-offset-4 hover:text-foreground hover:underline"
+                >
+                  Forgot password?
+                </Link>
+              </div>
+              <Input
+                id="password"
+                type="password"
+                placeholder="Enter your password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                autoComplete="current-password"
+                disabled={loading || isLoading}
+                className="h-11"
+              />
+            </div>
+            <Button type="submit" className="h-11 w-full font-medium" disabled={loading || isLoading}>
+              {loading ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Signing in…
+                </>
+              ) : (
+                'Continue'
+              )}
+            </Button>
+          </form>
+        </CardContent>
+        <CardFooter className="border-t pt-6 text-center text-xs text-muted-foreground">
+          {appConfig.name}
+        </CardFooter>
+      </Card>
+    </AuthLayout>
   )
 }
