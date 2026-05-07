@@ -1,5 +1,5 @@
 export const appConfig = {
-  name: import.meta.env.VITE_APP_NAME || 'Private App',
+  name: import.meta.env.VITE_APP_NAME || 'App',
   homePath: '/dashboard',
   loginPath: '/login',
   forgotPasswordPath: '/forgot-password',

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Private App</title>
+    <title>App</title>
     <style>
       * { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -21,46 +21,35 @@
       }
 
       .app-splash-logo {
-        font-size: 2rem;
-        font-weight: 700;
-        letter-spacing: 0;
-        line-height: 1;
-        color: #0f172a;
-        position: relative;
+        width: 28px;
+        height: 28px;
+        border-radius: 999px;
+        border: 3px solid #dbe3ef;
+        border-top-color: #2563eb;
+        animation: spin 0.8s linear infinite;
       }
 
       .app-splash-logo::after {
-        content: '';
-        position: absolute;
-        left: 0;
-        right: 0;
-        bottom: -10px;
-        height: 2px;
-        border-radius: 999px;
-        background: #2563eb;
-        transform-origin: left;
-        animation: load 1.4s ease-in-out infinite;
+        content: none;
       }
 
       .app-splash-sub {
         font-size: 0.7rem;
         font-weight: 500;
-        letter-spacing: 0.14em;
-        text-transform: uppercase;
+        letter-spacing: 0;
+        line-height: 1;
         color: #64748b;
       }
 
-      @keyframes load {
-        0%   { transform: scaleX(0.2); opacity: 0.35; }
-        50%  { transform: scaleX(1); opacity: 1; }
-        100% { transform: scaleX(0.2); opacity: 0.35; }
+      @keyframes spin {
+        to { transform: rotate(360deg); }
       }
     </style>
   </head>
   <body>
     <div id="root">
       <div id="splash">
-        <span class="app-splash-logo">Private App</span>
+        <span class="app-splash-logo" aria-hidden="true"></span>
         <span class="app-splash-sub">Loading</span>
       </div>
     </div>

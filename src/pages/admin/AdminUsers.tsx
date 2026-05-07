@@ -15,7 +15,6 @@ import {
 } from '@/components/ui/alert-dialog'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import {
   Dialog,
   DialogContent,
@@ -272,11 +271,13 @@ export function AdminUsers() {
 
   return (
     <>
-      <Card>
-        <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0">
+      <section className="space-y-5">
+        <div className="flex flex-col gap-4 border-b pb-5 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <CardTitle>Users</CardTitle>
-            <CardDescription>Manage accounts and roles for this private application</CardDescription>
+            <h1 className="text-2xl font-semibold tracking-tight">Users</h1>
+            <p className="mt-1 text-sm text-muted-foreground">
+              Manage accounts and roles for this application
+            </p>
           </div>
           <div className="flex items-center gap-2">
             <Button variant="outline" size="sm" onClick={loadUsers} disabled={loading}>
@@ -288,122 +289,121 @@ export function AdminUsers() {
               New user
             </Button>
           </div>
-        </CardHeader>
-        <CardContent>
-          <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-            <div className="relative w-full sm:max-w-sm">
-              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-              <Input
-                value={query}
-                onChange={(event) => setQuery(event.target.value)}
-                placeholder="Search users or roles"
-                className="h-10 pl-9"
-              />
-            </div>
-            <div className="text-sm text-muted-foreground">
-              {filteredUsers.length} of {users.length} users
-            </div>
-          </div>
+        </div>
 
-          <div className="overflow-hidden rounded-md border">
-            <Table>
-              <TableHeader>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="relative w-full sm:max-w-sm">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              placeholder="Search users or roles"
+              className="h-10 pl-9"
+            />
+          </div>
+          <div className="text-sm text-muted-foreground">
+            {filteredUsers.length} of {users.length} users
+          </div>
+        </div>
+
+        <div className="overflow-hidden border-y bg-background">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Email</TableHead>
+                <TableHead className="w-[180px]">Role</TableHead>
+                <TableHead className="w-[140px]">Status</TableHead>
+                <TableHead className="w-12" />
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {loading ? (
                 <TableRow>
-                  <TableHead>Email</TableHead>
-                  <TableHead className="w-[180px]">Role</TableHead>
-                  <TableHead className="w-[140px]">Status</TableHead>
-                  <TableHead className="w-12" />
+                  <TableCell colSpan={4} className="h-32 text-center text-muted-foreground">
+                    <Loader2 className="mx-auto h-5 w-5 animate-spin" />
+                  </TableCell>
                 </TableRow>
-              </TableHeader>
-              <TableBody>
-                {loading ? (
-                  <TableRow>
-                    <TableCell colSpan={4} className="h-32 text-center text-muted-foreground">
-                      <Loader2 className="mx-auto h-5 w-5 animate-spin" />
-                    </TableCell>
-                  </TableRow>
-                ) : users.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={4} className="h-32 text-center text-sm text-muted-foreground">
-                      No users yet
-                    </TableCell>
-                  </TableRow>
-                ) : filteredUsers.length === 0 ? (
-                  <TableRow>
-                    <TableCell colSpan={4} className="h-32 text-center text-sm text-muted-foreground">
-                      No matching users
-                    </TableCell>
-                  </TableRow>
-                ) : (
-                  filteredUsers.map((user) => {
-                    const isCurrentUser = currentUser?.id === user.id
-                    const roleValue = user.role ?? ''
+              ) : users.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-32 text-center text-sm text-muted-foreground">
+                    No users yet
+                  </TableCell>
+                </TableRow>
+              ) : filteredUsers.length === 0 ? (
+                <TableRow>
+                  <TableCell colSpan={4} className="h-32 text-center text-sm text-muted-foreground">
+                    No matching users
+                  </TableCell>
+                </TableRow>
+              ) : (
+                filteredUsers.map((user) => {
+                  const isCurrentUser = currentUser?.id === user.id
+                  const roleValue = user.role ?? ''
 
-                    return (
-                      <TableRow key={user.id}>
-                        <TableCell>
-                          <div className="flex min-w-0 flex-col">
-                            <span className="truncate font-medium">{user.email}</span>
-                            {isCurrentUser && (
-                              <span className="text-xs text-muted-foreground">Current account</span>
-                            )}
-                          </div>
-                        </TableCell>
-                        <TableCell>
-                          <Select
-                            value={roleValue}
-                            onValueChange={(nextRole) => handleRoleChange(user, nextRole)}
-                            disabled={rolesLoading || updatingRoleId === user.id || sortedRoles.length === 0}
-                          >
-                            <SelectTrigger className="h-9">
-                              <SelectValue placeholder={rolesLoading ? 'Loading roles' : 'Select role'} />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {sortedRoles.map((roleOption) => (
-                                <SelectItem key={roleOption.id} value={roleOption.name}>
-                                  {roleOption.name}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={user.confirmed_at ? 'secondary' : 'outline'}>
-                            {user.confirmed_at ? 'Confirmed' : 'Pending'}
-                          </Badge>
-                        </TableCell>
-                        <TableCell>
-                          <DropdownMenu>
-                            <DropdownMenuTrigger asChild>
-                              <Button variant="ghost" size="icon" aria-label={`Manage ${user.email}`}>
-                                <MoreHorizontal className="h-4 w-4" />
-                              </Button>
-                            </DropdownMenuTrigger>
-                            <DropdownMenuContent align="end">
-                              <DropdownMenuItem onClick={() => openEditDialog(user)}>
-                                <Edit2 className="h-4 w-4" />
-                                Edit
-                              </DropdownMenuItem>
-                              <DropdownMenuItem
-                                className="text-destructive focus:text-destructive"
-                                onClick={() => setDeleteUser(user)}
-                                disabled={isCurrentUser}
-                              >
-                                <Trash2 className="h-4 w-4" />
-                                Delete
-                              </DropdownMenuItem>
-                            </DropdownMenuContent>
-                          </DropdownMenu>
-                        </TableCell>
-                      </TableRow>
-                    )
-                  })
-                )}
-              </TableBody>
-            </Table>
-          </div>
-        </CardContent>
-      </Card>
+                  return (
+                    <TableRow key={user.id}>
+                      <TableCell>
+                        <div className="flex min-w-0 flex-col">
+                          <span className="truncate font-medium">{user.email}</span>
+                          {isCurrentUser && (
+                            <span className="text-xs text-muted-foreground">Current account</span>
+                          )}
+                        </div>
+                      </TableCell>
+                      <TableCell>
+                        <Select
+                          value={roleValue}
+                          onValueChange={(nextRole) => handleRoleChange(user, nextRole)}
+                          disabled={rolesLoading || updatingRoleId === user.id || sortedRoles.length === 0}
+                        >
+                          <SelectTrigger className="h-9">
+                            <SelectValue placeholder={rolesLoading ? 'Loading roles' : 'Select role'} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {sortedRoles.map((roleOption) => (
+                              <SelectItem key={roleOption.id} value={roleOption.name}>
+                                {roleOption.name}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </TableCell>
+                      <TableCell>
+                        <Badge variant={user.confirmed_at ? 'secondary' : 'outline'}>
+                          {user.confirmed_at ? 'Confirmed' : 'Pending'}
+                        </Badge>
+                      </TableCell>
+                      <TableCell>
+                        <DropdownMenu>
+                          <DropdownMenuTrigger asChild>
+                            <Button variant="ghost" size="icon" aria-label={`Manage ${user.email}`}>
+                              <MoreHorizontal className="h-4 w-4" />
+                            </Button>
+                          </DropdownMenuTrigger>
+                          <DropdownMenuContent align="end">
+                            <DropdownMenuItem onClick={() => openEditDialog(user)}>
+                              <Edit2 className="h-4 w-4" />
+                              Edit
+                            </DropdownMenuItem>
+                            <DropdownMenuItem
+                              className="text-destructive focus:text-destructive"
+                              onClick={() => setDeleteUser(user)}
+                              disabled={isCurrentUser}
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              Delete
+                            </DropdownMenuItem>
+                          </DropdownMenuContent>
+                        </DropdownMenu>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })
+              )}
+            </TableBody>
+          </Table>
+        </div>
+      </section>
 
       <Dialog open={dialogOpen} onOpenChange={(open) => (open ? setDialogOpen(true) : closeUserDialog())}>
         <DialogContent>
