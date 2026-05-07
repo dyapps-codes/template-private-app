@@ -3,16 +3,8 @@ import { Link, useLocation } from 'react-router-dom'
 import { cn, getAvatarColor } from '@/lib/utils'
 import { Separator } from '@/components/ui/separator'
 import { appConfig } from '@/lib/app-config'
-import {
-  LayoutDashboard, Settings, LogOut, ChevronLeft, Menu, X, Layers, ShieldCheck, Users,
-} from 'lucide-react'
-
-interface NavItem {
-  label: string
-  href: string
-  icon: React.ElementType
-  badge?: number
-}
+import { adminNavItems, mainNavItems, type AppNavItem } from '@/config/navigation'
+import { LogOut, ChevronLeft, Menu, X, Layers, ShieldCheck } from 'lucide-react'
 
 interface SidebarProps {
   onLogout: () => void
@@ -21,18 +13,7 @@ interface SidebarProps {
   userRole?: string
 }
 
-// ADD OR REMOVE NAV ITEMS HERE
-const navItems: NavItem[] = [
-  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'Workspace', href: '/workspace', icon: Layers },
-  { label: 'Settings', href: '/settings', icon: Settings },
-]
-
-const adminNavItems: NavItem[] = [
-  { label: 'Users', href: appConfig.adminUsersPath, icon: Users },
-]
-
-export function Sidebar({ onLogout, appName = 'My App', userEmail = '', userRole = '' }: SidebarProps) {
+export function Sidebar({ onLogout, appName = appConfig.name, userEmail = '', userRole = '' }: SidebarProps) {
   const location = useLocation()
   const [collapsed, setCollapsed] = useState(false)
   const [mobileOpen, setMobileOpen] = useState(false)
@@ -42,9 +23,10 @@ export function Sidebar({ onLogout, appName = 'My App', userEmail = '', userRole
 
   const avatarColor = getAvatarColor(userEmail || 'A')
   const initials = userEmail ? userEmail.charAt(0).toUpperCase() : 'A'
-  const showAdmin = userRole === 'admin'
+  const visibleAdminNavItems = adminNavItems.filter((item) => !item.requiredRole || item.requiredRole === userRole)
+  const showAdmin = visibleAdminNavItems.length > 0
 
-  const renderNavItems = (items: NavItem[]) => items.map((item) => {
+  const renderNavItems = (items: AppNavItem[]) => items.map((item) => {
     const Icon = item.icon
     const active = isActive(item.href)
 
@@ -107,7 +89,7 @@ export function Sidebar({ onLogout, appName = 'My App', userEmail = '', userRole
 
       {/* Navigation */}
       <nav className="flex-1 px-3 py-4 space-y-1">
-        {renderNavItems(navItems)}
+        {renderNavItems(mainNavItems)}
 
         {showAdmin && (
           <div className="pt-4">
@@ -117,7 +99,7 @@ export function Sidebar({ onLogout, appName = 'My App', userEmail = '', userRole
                 Admin
               </div>
             )}
-            <div className="space-y-1">{renderNavItems(adminNavItems)}</div>
+            <div className="space-y-1">{renderNavItems(visibleAdminNavItems)}</div>
           </div>
         )}
       </nav>

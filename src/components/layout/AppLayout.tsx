@@ -2,14 +2,7 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
 import { ChevronRight } from 'lucide-react'
 import { useAuth } from '@dypai-ai/client-sdk/react'
-
-// ADD PAGE TITLES FOR EACH ROUTE HERE
-const pageTitles: Record<string, string> = {
-  '/dashboard': 'Dashboard',
-  '/workspace': 'Workspace',
-  '/settings': 'Settings',
-  '/admin/users': 'Users',
-}
+import { getBreadcrumbs, getPageTitle } from '@/config/navigation'
 
 interface AppLayoutProps {
   appName?: string
@@ -20,7 +13,7 @@ export function AppLayout({ appName }: AppLayoutProps) {
   const navigate = useNavigate()
   const { user, signOut } = useAuth()
 
-  const pageTitle = pageTitles[location.pathname] ?? 'Page'
+  const pageTitle = getPageTitle(location.pathname)
   const userEmail = user?.email ?? ''
   const userRole = user?.role ?? ''
 
@@ -29,19 +22,7 @@ export function AppLayout({ appName }: AppLayoutProps) {
     navigate('/login')
   }
 
-  const breadcrumbs =
-    location.pathname === '/dashboard'
-      ? [{ label: 'Dashboard', href: '/dashboard' }]
-      : location.pathname.startsWith('/admin')
-        ? [
-            { label: 'Dashboard', href: '/dashboard' },
-            { label: 'Admin', href: '/admin' },
-            { label: pageTitle, href: location.pathname },
-          ]
-      : [
-          { label: 'Dashboard', href: '/dashboard' },
-          { label: pageTitle, href: location.pathname },
-        ]
+  const breadcrumbs = getBreadcrumbs(location.pathname)
 
   return (
     <div className="flex h-screen overflow-hidden bg-background">

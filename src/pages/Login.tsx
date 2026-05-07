@@ -46,7 +46,7 @@ export function Login() {
   }
 
   return (
-    <AuthLayout footer="Secured authentication via DYPAI">
+    <AuthLayout>
       <Card className="w-full max-w-[400px] border-border/80 shadow-sm">
         <CardHeader className="space-y-1 pb-4">
           <CardTitle className="text-xl font-semibold tracking-tight">Sign in</CardTitle>

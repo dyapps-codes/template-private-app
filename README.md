@@ -1,6 +1,6 @@
-# DYPAI Private App Template
+# Private App Template
 
-Starter template for private DYPAI applications with authentication, password recovery, protected routes, and an admin users panel.
+Starter template for private applications with authentication, password recovery, protected routes, and an admin users panel.
 
 ## Setup
 
@@ -20,8 +20,10 @@ npm run dev
 
 ## Structure
 
+- `AGENTS.md` explains the template structure for automated code changes.
 - `src/lib/dypai.ts` creates the DYPAI SDK client.
 - `src/lib/app-config.ts` centralizes app name and route paths.
+- `src/config/navigation.ts` centralizes sidebar items, route titles, and breadcrumbs.
 - `src/App.tsx` defines public, private, and admin routes.
 - `src/components/layout/AppLayout.tsx` renders the private shell.
 - `src/components/layout/Sidebar.tsx` controls navigation.
@@ -81,7 +83,7 @@ Add private pages inside the protected layout in `src/App.tsx`:
 <Route path="/workspace" element={<Workspace />} />
 ```
 
-Then add navigation items in `src/components/layout/Sidebar.tsx`.
+Then add navigation items and route titles in `src/config/navigation.ts`.
 
 ## Styling
 

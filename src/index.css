@@ -4,7 +4,7 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Design system for DYPAI private app templates. */
+/* Design system for private app templates. */
 
 @layer base {
   :root {
