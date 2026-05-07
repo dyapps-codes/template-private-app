@@ -10,7 +10,7 @@
     "deploy": "npx @dypai-ai/cli deploy"
   },
   "dependencies": {
-    "@dypai-ai/client-sdk": "^1.10.3",
+    "@dypai-ai/client-sdk": "^1.10.4",
     "@hookform/resolvers": "^5.2.2",
     "@radix-ui/react-accordion": "^1.2.12",
     "@radix-ui/react-alert-dialog": "^1.1.15",
